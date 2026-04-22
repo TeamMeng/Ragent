@@ -1,9 +1,60 @@
-[package]
-name = "ragent"
+[workspace]
+resolver = "2"
+members = [
+    "crates/app-core",
+    "crates/app-proto",
+    "crates/app-agent",
+    "crates/app-api",
+]
+
+[workspace.package]
 version = "0.1.0"
 edition = "2024"
 license = "MIT"
+repository = "https://github.com/TeamMeng/Ragent"
+rust-version = "1.85"
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[workspace.dependencies]
+# Core
+anyhow = "1"
+thiserror = "2"
+tokio = { version = "1", features = ["full"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter", "json"] }
+futures = "0.3"
 
-[dependencies]
+# Web
+axum = { version = "0.8", features = ["ws", "macros"] }
+axum-extra = { version = "0.10", features = ["typed-header"] }
+tower = "0.5"
+tower-http = { version = "0.6", features = ["cors", "trace"] }
+reqwest = { version = "0.12", features = ["json", "rustls-tls"], default-features = false }
+
+# Database
+sqlx = { version = "0.8", features = [
+    "runtime-tokio-rustls",
+    "postgres",
+    "chrono",
+    "uuid",
+    "json",
+] }
+
+# Auth
+jsonwebtoken = "9"
+argon2 = "0.5"
+
+# Redis
+redis = { version = "0.27", features = ["tokio-comp", "connection-manager"] }
+
+# Shared
+uuid = { version = "1", features = ["v4", "serde"] }
+chrono = { version = "0.4", features = ["serde"] }
+config = "0.14"
+dotenvy = "0.15"
+
+# Internal crates
+app-core = { path = "crates/app-core" }
+app-proto = { path = "crates/app-proto" }
+app-agent = { path = "crates/app-agent" }

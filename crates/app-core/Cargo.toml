@@ -1,0 +1,21 @@
+[package]
+name = "app-core"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+anyhow = { workspace = true }
+thiserror = { workspace = true }
+tokio = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+tracing = { workspace = true }
+sqlx = { workspace = true }
+jsonwebtoken = { workspace = true }
+argon2 = { workspace = true }
+rand = { workspace = true }
+uuid = { workspace = true }
+chrono = { workspace = true }
+config = { workspace = true }
+dotenvy = { workspace = true }
+redis = { workspace = true }

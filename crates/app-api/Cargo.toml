@@ -1,0 +1,32 @@
+[package]
+name = "app-api"
+version.workspace = true
+edition.workspace = true
+
+[[bin]]
+name = "ragent-server"
+path = "src/main.rs"
+
+[dependencies]
+app-core = { workspace = true }
+app-proto = { workspace = true }
+app-agent = { workspace = true }
+
+anyhow = { workspace = true }
+tokio = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+tracing = { workspace = true }
+tracing-subscriber = { workspace = true }
+axum = { workspace = true }
+axum-extra = { workspace = true }
+tower = { workspace = true }
+tower-http = { workspace = true }
+futures = { workspace = true }
+sqlx = { workspace = true }
+uuid = { workspace = true }
+chrono = { workspace = true }
+redis = { workspace = true }
+
+[dev-dependencies]
+reqwest = { workspace = true }

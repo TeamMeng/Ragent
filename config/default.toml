@@ -1,0 +1,21 @@
+[server]
+host = "127.0.0.1"
+port = 8000
+
+[database]
+url = "postgres://postgres:postgres@localhost:5432/ragent"
+max_connections = 10
+
+[redis]
+url = "redis://127.0.0.1:6379"
+max_connections = 5
+
+[jwt]
+secret = "change-me-to-a-random-256-bit-key"
+access_token_expiry_secs = 900       # 15 min
+refresh_token_expiry_secs = 604800   # 7 days
+
+[ollama]
+base_url = "http://localhost:11434"
+model = "llama3"
+embedding_model = "nomic-embed-text"

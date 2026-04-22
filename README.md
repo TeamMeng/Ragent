@@ -1,88 +1,127 @@
-# RUST 代码模板
+# Ragent — Rust AI Agent Platform
 
-## 环境设置
+> **R**ust + **Agent** — 一键式 AI 员工对话平台
 
-### 安装 Rust
+[![Rust](https://img.shields.io/badge/Rust-1.85+-orange.svg)](https://www.rust-lang.org/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
-```bash
-curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+## Architecture
+
+```
+┌──────────────┐     ┌──────────────┐
+│  Dioxus UI   │────▶│  axum HTTP   │
+│  (Frontend)  │◀────│  + WebSocket │
+└──────────────┘     └──────┬───────┘
+                            │
+                    ┌───────┴────────┐
+                    │   app-core     │
+                    │ (Config/DB/Auth)│
+                    └───────┬────────┘
+                            │
+              ┌─────────────┼─────────────┐
+              │             │             │
+      ┌───────┴──────┐ ┌───┴────┐ ┌─────┴─────┐
+      │  PostgreSQL  │ │ Redis  │ │  Ollama   │
+      │  (pgvector)  │ │ (Cache)│ │  (LLM)    │
+      └──────────────┘ └────────┘ └───────────┘
+                            │
+                    ┌───────┴────────┐
+                    │   app-agent    │
+                    │ (Tools: Calc/  │
+                    │  Search/Sandbox│
+                    └────────────────┘
 ```
 
-### 安装 VSCode 插件
+## Tech Stack
 
-- crates: Rust 包管理
-- Even Better TOML: TOML 文件支持
-- Better Comments: 优化注释显示
-- Error Lens: 错误提示优化
-- GitLens: Git 增强
-- Github Copilot: 代码提示
-- indent-rainbow: 缩进显示优化
-- Prettier - Code formatter: 代码格式化
-- REST client: REST API 调试
-- rust-analyzer: Rust 语言支持
-- Rust Test lens: Rust 测试支持
-- Rust Test Explorer: Rust 测试概览
-- TODO Highlight: TODO 高亮
-- vscode-icons: 图标优化
-- YAML: YAML 文件支持
+| Layer | Technology |
+|-------|-----------|
+| Frontend | Dioxus 0.7 + Tailwind CSS |
+| Backend | axum 0.8 + tokio |
+| Database | PostgreSQL + sqlx (migrations) |
+| Cache | Redis |
+| Auth | JWT + Argon2 |
+| AI | Ollama (local LLM) |
+| Agent | Custom tool registry |
+| Realtime | WebSocket (axum ws) |
 
-### 安装 cargo generate
+## Getting Started
 
-cargo generate 是一个用于生成项目模板的工具。它可以使用已有的 github repo 作为模版生成新的项目。
+### Prerequisites
 
-```bash
-cargo install cargo-generate
-```
+- Rust 1.85+
+- PostgreSQL 15+
+- Redis 7+
+- Ollama (optional, for AI features)
+
+### 1. Clone & Setup
 
 ```bash
-cargo generate TeamMeng/template
+git clone https://github.com/TeamMeng/Ragent.git
+cd Ragent
+cp .env.example .env
+# Edit .env with your database/Redis/JWT settings
 ```
 
-### 安装 pre-commit
-
-pre-commit 是一个代码检查工具，可以在提交代码前进行代码检查。
+### 2. Database
 
 ```bash
-pipx install pre-commit
+createdb ragent
 ```
 
-安装成功后运行 `pre-commit install` 即可。
+Migrations run automatically on first startup.
 
-### 安装 Cargo deny
-
-Cargo deny 是一个 Cargo 插件，可以用于检查依赖的安全性。
+### 3. Run Server
 
 ```bash
-cargo install --locked cargo-deny
+cargo run -p app-api
 ```
 
-### 安装 typos
+Server starts at `http://127.0.0.1:8000`
 
-typos 是一个拼写检查工具。
+### 4. (Optional) Start Ollama
 
 ```bash
-cargo install typos-cli
+ollama pull llama3
+ollama serve
 ```
 
-### 安装 git cliff
+## API Endpoints
 
-git cliff 是一个生成 changelog 的工具。
+| Method | Path | Description |
+|--------|------|-------------|
+| POST | `/api/auth/register` | Register new user |
+| POST | `/api/auth/login` | Login, get JWT tokens |
+| POST | `/api/auth/refresh` | Refresh access token |
+| POST | `/api/sessions` | Create chat session |
+| GET | `/api/sessions` | List sessions |
+| POST | `/api/sessions/:id/messages` | Send message |
+| GET | `/api/sessions/:id/messages` | List messages |
+| GET | `/ws` | WebSocket connection |
 
-```bash
-cargo install git-cliff
+## Project Structure
+
+```
+Ragent/
+├── crates/
+│   ├── app-core/      # Shared config, DB, auth, models
+│   ├── app-proto/     # Shared types (WebSocket events)
+│   ├── app-agent/     # AI agent + tools (calc/search/sandbox)
+│   └── app-api/       # axum HTTP/WebSocket server
+├── config/            # Configuration files
+├── migrations/        # SQL migrations
+├── Cargo.toml         # Workspace root
+└── README.md
 ```
 
-### 安装 cargo nextest
+## Roadmap
 
-cargo nextest 是一个 Rust 增强测试工具。
+- [x] **Phase 1** — MVP single-chat with 3 tools (v0.1.0)
+- [ ] **Phase 2** — Multi-agent closed-loop group chat (v0.2.0)
+- [ ] **Phase 3** — RAG knowledge base with pgvector (v0.3.0)
+- [ ] **Phase 4** — Production hardening (v0.4.0)
+- [ ] **Phase 5** — UX polish & GA release (v1.0.0)
 
-```bash
-cargo install cargo-nextest --locked
-```
+## License
 
-### 安装 cargo audit
-cargo audit 是一个 Rust 检查已知的漏洞安全和依赖安全的工具
-
-```bash
-cargo install cargo-audit
-```
+MIT
