@@ -4,9 +4,9 @@ pub mod calculator;
 pub mod code_sandbox;
 pub mod web_search;
 
-pub use calculator::{CalculatorTool, CalculatorInput, CalculatorOutput};
-pub use web_search::{WebSearchTool, WebSearchInput, WebSearchOutput};
-pub use code_sandbox::{CodeSandboxTool, CodeSandboxInput, CodeSandboxOutput};
+pub use calculator::{CalculatorInput, CalculatorOutput, CalculatorTool};
+pub use code_sandbox::{CodeSandboxInput, CodeSandboxOutput, CodeSandboxTool};
+pub use web_search::{WebSearchInput, WebSearchOutput, WebSearchTool};
 
 use serde::{Deserialize, Serialize};
 

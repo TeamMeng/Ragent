@@ -1,11 +1,11 @@
 //! AI agent module — calls Ollama REST API directly.
 
-use anyhow::{Result, Context};
+use anyhow::{Context, Result};
 use serde::{Deserialize, Serialize};
 use std::time::Duration;
 use tracing::{info, warn};
 
-use crate::tools::{CalculatorTool, WebSearchTool, CodeSandboxTool, ToolCall, ToolResult};
+use crate::tools::{CalculatorTool, CodeSandboxTool, ToolCall, ToolResult, WebSearchTool};
 
 /// Configuration for the agent.
 #[derive(Debug, Clone)]
@@ -98,7 +98,8 @@ impl ChatAgent {
         };
 
         let url = format!("{}/api/chat", self.config.ollama_base_url);
-        let resp = self.client
+        let resp = self
+            .client
             .post(&url)
             .json(&body)
             .send()
@@ -111,8 +112,12 @@ impl ChatAgent {
             anyhow::bail!("Ollama API error {}: {}", status, text);
         }
 
-        let data: OllamaResponse = resp.json().await.context("Failed to parse Ollama response")?;
-        let text = data.message
+        let data: OllamaResponse = resp
+            .json()
+            .await
+            .context("Failed to parse Ollama response")?;
+        let text = data
+            .message
             .map(|m| m.content)
             .or(data.response)
             .unwrap_or_default();
@@ -130,8 +135,8 @@ impl ChatAgent {
                 Ok(ToolResult::from_calculator(out))
             }
             "web_search" => {
-                let args = serde_json::from_value(input)
-                    .unwrap_or(serde_json::json!({"query": ""}));
+                let args =
+                    serde_json::from_value(input).unwrap_or(serde_json::json!({"query": ""}));
                 let out = self.web_search.call(args).await?;
                 Ok(ToolResult::from_search(out))
             }
