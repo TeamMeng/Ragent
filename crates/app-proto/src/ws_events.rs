@@ -12,13 +12,24 @@ pub enum WsEvent {
     Auth { token: String },
 
     /// Send a chat message.
-    ChatMessage { session_id: Uuid, content: String, content_type: Option<String> },
+    ChatMessage {
+        session_id: Uuid,
+        content: String,
+        content_type: Option<String>,
+    },
 
     /// Request message history.
-    History { session_id: Uuid, before: Option<Uuid>, limit: Option<u32> },
+    History {
+        session_id: Uuid,
+        before: Option<Uuid>,
+        limit: Option<u32>,
+    },
 
     /// Start a new chat session.
-    NewSession { name: Option<String>, session_type: Option<i16> },
+    NewSession {
+        name: Option<String>,
+        session_type: Option<i16>,
+    },
 
     /// Stop the current agent generation.
     StopGeneration,
@@ -28,10 +39,22 @@ pub enum WsEvent {
 
     // ─── Server → Client ─────────────────────────────
     /// Auth result.
-    AuthResult { ok: bool, user_id: Option<Uuid>, error: Option<String> },
+    AuthResult {
+        ok: bool,
+        user_id: Option<Uuid>,
+        error: Option<String>,
+    },
 
     /// A new message was created.
-    Message { id: Uuid, session_id: Uuid, sender_type: i16, sender_id: Option<Uuid>, content: String, content_type: String, created_at: String },
+    Message {
+        id: Uuid,
+        session_id: Uuid,
+        sender_type: i16,
+        sender_id: Option<Uuid>,
+        content: String,
+        content_type: String,
+        created_at: String,
+    },
 
     /// Agent is currently generating (streaming).
     StreamStart { session_id: Uuid, agent_id: Uuid },

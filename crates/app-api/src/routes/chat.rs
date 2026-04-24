@@ -1,12 +1,12 @@
 //! Chat session and message routes.
 
 use axum::{
+    Json,
     extract::{Path, Query, State},
     http::StatusCode,
-    Json,
 };
-use std::sync::Arc;
 use serde::Deserialize;
+use std::sync::Arc;
 use uuid::Uuid;
 
 use crate::AppState;
@@ -44,9 +44,7 @@ pub async fn create_session(
 /// GET /api/sessions — list user's sessions.
 ///
 /// TODO: Filter by current user from auth Claims.
-pub async fn list_sessions(
-    State(state): State<Arc<AppState>>,
-) -> AppResult<Json<Vec<Session>>> {
+pub async fn list_sessions(State(state): State<Arc<AppState>>) -> AppResult<Json<Vec<Session>>> {
     let sessions = sqlx::query_as::<_, Session>(
         "SELECT * FROM sessions WHERE is_archived = FALSE ORDER BY updated_at DESC LIMIT 50",
     )

@@ -1,10 +1,10 @@
 //! JWT token generation/validation and Argon2 password hashing.
 
-use argon2::{Argon2, PasswordHash, PasswordHasher, PasswordVerifier};
-use argon2::password_hash::rand_core::OsRng;
 use argon2::password_hash::SaltString;
+use argon2::password_hash::rand_core::OsRng;
+use argon2::{Argon2, PasswordHash, PasswordHasher, PasswordVerifier};
 use chrono::{Duration, Utc};
-use jsonwebtoken::{decode, encode, DecodingKey, EncodingKey, Header, Validation};
+use jsonwebtoken::{DecodingKey, EncodingKey, Header, Validation, decode, encode};
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
@@ -41,8 +41,7 @@ pub fn hash_password(password: &str) -> AppResult<String> {
 }
 
 pub fn verify_password(password: &str, hash: &str) -> AppResult<bool> {
-    let parsed = PasswordHash::new(hash)
-        .map_err(|e| AppError::Internal(e.into()))?;
+    let parsed = PasswordHash::new(hash).map_err(|e| AppError::Internal(e.into()))?;
     Ok(Argon2::default()
         .verify_password(password.as_bytes(), &parsed)
         .is_ok())

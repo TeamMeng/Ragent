@@ -4,11 +4,11 @@ pub mod auth;
 pub mod chat;
 pub mod ws;
 
-use std::sync::Arc;
 use axum::{
-    routing::{get, post},
     Router,
+    routing::{get, post},
 };
+use std::sync::Arc;
 use tower_http::cors::CorsLayer;
 use tower_http::trace::TraceLayer;
 
@@ -24,8 +24,14 @@ pub fn create_router(state: Arc<AppState>) -> Router {
         // Chat sessions
         .route("/api/sessions", post(chat::create_session))
         .route("/api/sessions", get(chat::list_sessions))
-        .route("/api/sessions/{session_id}/messages", post(chat::send_message))
-        .route("/api/sessions/{session_id}/messages", get(chat::list_messages))
+        .route(
+            "/api/sessions/{session_id}/messages",
+            post(chat::send_message),
+        )
+        .route(
+            "/api/sessions/{session_id}/messages",
+            get(chat::list_messages),
+        )
         // WebSocket
         .route("/ws", get(ws::ws_handler));
 

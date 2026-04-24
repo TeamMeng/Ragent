@@ -32,11 +32,16 @@ async fn main() -> Result<()> {
     info!("Starting Ragent server...");
 
     // Database
-    let db = create_pool(&config).await.expect("Failed to connect to database");
+    let db = create_pool(&config)
+        .await
+        .expect("Failed to connect to database");
     run_migrations(&db).await.expect("Failed to run migrations");
     info!("Database connected and migrations applied");
 
-    let state = Arc::new(AppState { config: config.clone(), db });
+    let state = Arc::new(AppState {
+        config: config.clone(),
+        db,
+    });
 
     // Build router
     let app = routes::create_router(state);

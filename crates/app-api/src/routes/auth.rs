@@ -1,19 +1,15 @@
 //! Authentication routes: register, login, refresh.
 
-use axum::{
-    extract::State,
-    http::StatusCode,
-    Json,
-};
-use std::sync::Arc;
+use axum::{Json, extract::State, http::StatusCode};
 use sqlx::PgPool;
+use std::sync::Arc;
 use uuid::Uuid;
 
 use crate::AppState;
 use app_core::{
-    auth::{hash_password, verify_password, generate_tokens, validate_refresh_token},
+    auth::{generate_tokens, hash_password, validate_refresh_token, verify_password},
     error::{AppError, AppResult},
-    models::{User, UserPublic, CreateUser},
+    models::{CreateUser, User, UserPublic},
 };
 
 /// POST /api/auth/register
@@ -23,10 +19,14 @@ pub async fn register(
 ) -> AppResult<(StatusCode, Json<UserPublic>)> {
     // Validate input
     if input.username.len() < 3 {
-        return Err(AppError::Validation("Username must be at least 3 characters".into()));
+        return Err(AppError::Validation(
+            "Username must be at least 3 characters".into(),
+        ));
     }
     if input.password.len() < 8 {
-        return Err(AppError::Validation("Password must be at least 8 characters".into()));
+        return Err(AppError::Validation(
+            "Password must be at least 8 characters".into(),
+        ));
     }
 
     // Hash password
@@ -69,17 +69,17 @@ pub async fn login(
     let password = body["password"].as_str().unwrap_or("");
 
     if username.is_empty() || password.is_empty() {
-        return Err(AppError::Validation("Username and password required".into()));
+        return Err(AppError::Validation(
+            "Username and password required".into(),
+        ));
     }
 
     // Look up user
-    let user: User = sqlx::query_as(
-        "SELECT * FROM users WHERE username = $1 AND is_active = TRUE",
-    )
-    .bind(username)
-    .fetch_optional(&state.db)
-    .await?
-    .ok_or(AppError::Unauthorized("Invalid credentials".into()))?;
+    let user: User = sqlx::query_as("SELECT * FROM users WHERE username = $1 AND is_active = TRUE")
+        .bind(username)
+        .fetch_optional(&state.db)
+        .await?
+        .ok_or(AppError::Unauthorized("Invalid credentials".into()))?;
 
     // Verify password
     if !verify_password(password, &user.password_hash)? {
@@ -111,13 +111,11 @@ pub async fn refresh(
     let claims = validate_refresh_token(refresh_token, &state.config.jwt)?;
 
     // Verify user still exists and is active
-    let user: User = sqlx::query_as(
-        "SELECT * FROM users WHERE id = $1 AND is_active = TRUE",
-    )
-    .bind(claims.sub)
-    .fetch_one(&state.db)
-    .await
-    .map_err(|_| AppError::Unauthorized("User not found or inactive".into()))?;
+    let user: User = sqlx::query_as("SELECT * FROM users WHERE id = $1 AND is_active = TRUE")
+        .bind(claims.sub)
+        .fetch_one(&state.db)
+        .await
+        .map_err(|_| AppError::Unauthorized("User not found or inactive".into()))?;
 
     // Issue new token pair
     let tokens = generate_tokens(user.id, &user.username, &state.config.jwt)?;
