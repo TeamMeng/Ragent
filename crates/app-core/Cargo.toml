@@ -13,7 +13,6 @@ tracing = { workspace = true }
 sqlx = { workspace = true }
 jsonwebtoken = { workspace = true }
 argon2 = { workspace = true }
-rand = { workspace = true }
 uuid = { workspace = true }
 chrono = { workspace = true }
 config = { workspace = true }
